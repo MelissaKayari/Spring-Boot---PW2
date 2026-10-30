@@ -8,8 +8,11 @@ import java.util.List;
 
 
 @RestController
+
+
 public class ProdutoController{
 
+    @Autowired
     private List<Produto> produtos = new ArrayList<>();
 
     @GetMapping("/Produto")
