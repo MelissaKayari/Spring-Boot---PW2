@@ -1,51 +1,52 @@
 package com.produto.api.controller;
+import java.util.List;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.produto.api.model.Produto;
-import org.springframework.web.bind.annotation.*;
+import com.produto.api.repository.ProdutoRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
 @RestController
-
-
+@RequestMapping("api/produtos")
 public class ProdutoController{
 
     @Autowired
-    private List<Produto> produtos = new ArrayList<>();
+    private ProdutoRepository produtoRepository;
 
-    @GetMapping("/Produto")
-    public List<Produto> listaProdutos(){
-        return produtos;
+    @GetMapping("/produto")
+    public List<produto> listarProdutos() { return produtoRepository.findAll();}
+
+    @PostMapping("/produto")
+    public ResponseEntity<Produto> buscarporId(@PathVariable Long id){
+        produtoRepository.save(produto);
+        return new ResponseEntity.status(HttpStatus.CREATED).body(produto);
     }
 
-    @PostMapping("/Produto")
-    public Produto cadastrar(@RequestBody Produto produto){
-        produtos.add(produto);
-        return produto;
+    @GetMapping("/produto/{id}")
+    public ResponseEntity<Produto> buscarPorId(@PathVariable Long id){
+        return produtorepository.findById(id).map(ResponseEntity :: ok).orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/Produto/{id}")
-    public Produto buscarPorId(@PathVariable Long id){
-        for(Produto produto: produtos){
-            if(produto.getId().equals(id)) {
-                return produto;
-            }
+    @DeleteMapping("/produto/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id){
+        if(!produtoRepository.existById(id)){
+            return ResponseEntity.notFound().build();
         }
-        return null;
+        produtoRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
-
-    @DeleteMapping("/Produto/{id}")
-    public String excluir(@PathVariable Long id){
-        for(Produto produto : produtos){
-            if(produto.getId().equals(id)){
-                produtos.remove(produto);
-                return "Produto excluido com sucesso";
-            }
-        }
-        return "Produto não encontrado";
-
-    }
-
 }
